@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.5.RELEASE</version>
+    </parent>
+    <groupId>org.zhezhela.at</groupId>
+    <artifactId>spring-db-viewer</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>spring-db-viewer</name>
+    <description>DB viewer</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <hibernate-core.version>5.4.2.Final</hibernate-core.version>
+
+        <db_app.db>db_viewer</db_app.db>
+        <db_app.url>jdbc:postgresql://localhost:5432/db_viewer</db_app.url>
+
+        <db_flyway.user>flyway</db_flyway.user>
+        <db_flyway.password>passwd</db_flyway.password>
+
+        <flyway.user>${db_flyway.user}</flyway.user>
+        <flyway.password>${db_flyway.password}</flyway.password>
+
+        <flyway.locations>classpath:db/migration</flyway.locations>
+        <flyway.table>_schema_version_app</flyway.table>
+
+
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>db_dev</id>
+            <properties>
+                <!-- Application DB -->
+                <db_app.db>db_viewer</db_app.db>
+                <db_app.url>jdbc:postgresql://localhost:5432/db_viewer</db_app.url>
+
+                <db_app.user>db_viewer_admin</db_app.user>
+                <db_app.password>passwd</db_app.password>
+
+            </properties>
+        </profile>
+        <profile>
+            <id>flw_app</id>
+            <properties>
+                <flyway.user>db_viewer_admin</flyway.user>
+                <flyway.password>passwd</flyway.password>
+            </properties>
+        </profile>
+    </profiles>
+
+
+    <dependencies>
+        <!-- Spring boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <!--<dependency>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-starter-security</artifactId>-->
+        <!--</dependency>-->
+
+        <!-- Hibernate & DB -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <!-- Pluguins -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
+        <!-- TEST -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>4.0.3</version>
+                <configuration>
+                    <driver>org.postgresql.Driver</driver>
+                    <user>${flyway.user}</user>
+                    <password>${flyway.password}</password>
+                    <url>${db_app.url}</url>
+                    <schemas>
+                        <schema>public</schema>
+                    </schemas>
+                    <encoding>UTF-8</encoding>
+                    <placeholderReplacement>false</placeholderReplacement>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
