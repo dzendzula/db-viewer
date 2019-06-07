@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class DbConnectionSettingsServiceImpl implements DbConnectionSettingsService {
 
-    Logger logger = LoggerFactory.getLogger(DbConnectionSettingsServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(DbConnectionSettingsServiceImpl.class);
 
     @Autowired
     private DbConnectionSettingsRepository settingsRepository;
@@ -36,6 +36,11 @@ public class DbConnectionSettingsServiceImpl implements DbConnectionSettingsServ
     @Override
     public List<DbConnectionSettingsDto> findDbConnectionSettings(DbConnectionFilterDto filter) {
         return null;
+    }
+
+    @Override
+    public DbConnectionSettingsBo getDbConnectionSettings(Long id) {
+        return settingsRepository.findById(id).orElse(null);
     }
 
     @Override

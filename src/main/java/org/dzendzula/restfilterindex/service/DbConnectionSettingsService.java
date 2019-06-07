@@ -3,6 +3,7 @@ package org.dzendzula.restfilterindex.service;
 
 import org.dzendzula.restfilterindex.controller.filter.DbConnectionFilterDto;
 import org.dzendzula.restfilterindex.controller.vo.DbConnectionSettingsDto;
+import org.dzendzula.restfilterindex.domain.DbConnectionSettingsBo;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -15,6 +16,8 @@ public interface DbConnectionSettingsService {
     List<DbConnectionSettingsDto> findDbConnectionSettings(@Nullable DbConnectionFilterDto filter);
 
     DbConnectionSettingsDto findDbConnectionSettings(Long id);
+
+    DbConnectionSettingsBo getDbConnectionSettings(Long id);
 
     DbConnectionSettingsDto createDbConnectionSettings(@NonNull DbConnectionSettingsDto dto);
 
