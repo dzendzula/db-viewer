@@ -1,6 +1,6 @@
 package org.dzendzula.restfilterindex.service.impl;
 
-import org.dzendzula.restfilterindex.connector.DbConnectionPool;
+import org.dzendzula.restfilterindex.connector.DbConnectionManager;
 import org.dzendzula.restfilterindex.controller.vo.DataPreviewDto;
 import org.dzendzula.restfilterindex.controller.vo.DbColumnInfoDto;
 import org.dzendzula.restfilterindex.service.DbViewerService;
@@ -20,10 +20,11 @@ import java.util.function.Consumer;
 public class DbViewerServiceImpl implements DbViewerService {
 
     private static final String[] TABLE_TYPES = {"TABLE"};
+
     private Logger logger = LoggerFactory.getLogger(DbConnectionSettingsServiceImpl.class);
 
     @Autowired
-    private DbConnectionPool dbConnectionPool;
+    private DbConnectionManager dbConnectionManager;
 
     @Override
     public List<String> fetchSchemas(Long id) {
@@ -54,7 +55,7 @@ public class DbViewerServiceImpl implements DbViewerService {
                     result.add(resultSet.getString(Constants.JDBC_TABLE_INFO_COLUMNAME));
                 }
             } catch (SQLException e) {
-                logger.error("Error while fetching database tables for schema [" + schemaName + "]. " + e.getMessage());
+                logger.error("Error while fetching tables for schema [" + schemaName + "]. " + e.getMessage());
             }
         });
         return result;
@@ -91,7 +92,7 @@ public class DbViewerServiceImpl implements DbViewerService {
                     result.add(dto);
                 }
             } catch (SQLException e) {
-                logger.error("Error while fetching database tables for schema [" + schemaName + "]. " + e.getMessage());
+                logger.error("Error while fetching columns for table [" + schemaName + "." + tableName + "]. " + e.getMessage());
             }
         });
         return result;
@@ -103,7 +104,11 @@ public class DbViewerServiceImpl implements DbViewerService {
         DataPreviewDto result = new DataPreviewDto();
         List<String> columnNames = new ArrayList<>();
         List<HashMap<String, String>> data = new ArrayList<>();
-        Connection connection = dbConnectionPool.getConnection(connectionSettingsId);
+        Connection connection = dbConnectionManager.getConnection(connectionSettingsId);
+        if (connection == null) {
+            logger.debug("Cannot fetch data. Conection cannot be established");
+            return null;
+        }
         try {
             Statement stmt = connection.createStatement();
             String query = Constants.SQL_SELECT_ALL_FROM + tableName;
@@ -140,7 +145,11 @@ public class DbViewerServiceImpl implements DbViewerService {
     }
 
     private void processDbMetadata(Long id, Consumer<DatabaseMetaData> consumer) {
-        Connection connection = dbConnectionPool.getConnection(id);
+        Connection connection = dbConnectionManager.getConnection(id);
+        if (connection == null) {
+            logger.debug("Cannot fetch metada. Conection cannot be established");
+            return;
+        }
         try {
             DatabaseMetaData meta = connection.getMetaData();
             consumer.accept(meta);
