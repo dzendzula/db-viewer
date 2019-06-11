@@ -17,6 +17,11 @@ Supported functions
    Listing columns
    Data preview of the table
 
+- statistics about each column: min, max, avg, median value of the column.
+
+- statistics about each table: number of records, number of attributes.
+
+
 
 ===============================================
 Run prerequisites
@@ -41,3 +46,4 @@ REST API of application is descripted with Swagger
 SwaggerUI page cam be found at URL.
 
 /your-app-server-adress-with-contextpath/swagger-ui.html
+
