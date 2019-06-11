@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Objects;
 
 public class DbConnectionSettingsDto implements Serializable {
 
@@ -84,5 +85,25 @@ public class DbConnectionSettingsDto implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DbConnectionSettingsDto)) return false;
+        DbConnectionSettingsDto that = (DbConnectionSettingsDto) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(host, that.host) &&
+                Objects.equals(port, that.port) &&
+                Objects.equals(dbName, that.dbName) &&
+                Objects.equals(username, that.username) &&
+                Objects.equals(password, that.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, host, port, dbName, username, password);
     }
 }

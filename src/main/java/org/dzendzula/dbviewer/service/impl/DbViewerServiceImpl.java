@@ -157,6 +157,92 @@ public class DbViewerServiceImpl implements DbViewerService {
         return result;
     }
 
+
+    @Override
+    public DbTableStatisticsDto fetchTableStatistics(Long connectionSettingsId, String schemaName, String tableName) {
+        DbTableStatisticsDto result = new DbTableStatisticsDto();
+        Connection connection = dbConnectionManager.getConnection(connectionSettingsId);
+        if (connection == null) {
+            logger.debug("Cannot fetch data. Conection cannot be established");
+            throw new ConnectionValidationException(connectionSettingsId.toString());
+        }
+        try {
+            DatabaseMetaData meta = connection.getMetaData();
+
+            ResultSet columnsRs = meta.getColumns(null, schemaName, tableName, null);
+            columnsRs.last();
+            result.setNumberOfAttributes(columnsRs.getRow());
+            Statement stmt = connection.createStatement();
+            String query = "SELECT COUNT(*) FROM " + tableName;
+            ResultSet rs = stmt.executeQuery(query);
+            rs.next();
+            result.setNumberOfRecords(rs.getInt(1));
+            stmt.close();
+            result.setName(tableName);
+            connection.close();
+        } catch (SQLException e) {
+            logger.error("Error while fetching data from table [" + schemaName + "." + tableName + "]. " + e.getMessage());
+            throw new SQLRequestException("statistics", e.getMessage(), connectionSettingsId.toString());
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<DbColumnStatisticsDto> fetchColumnStatistics(Long connectionSettingsId, String schemaName, String tableName) {
+        List<DbColumnStatisticsDto> result = new ArrayList<>();
+        Connection connection = dbConnectionManager.getConnection(connectionSettingsId);
+        if (connection == null) {
+            logger.debug("Cannot fetch data. Conection cannot be established");
+            throw new ConnectionValidationException(connectionSettingsId.toString());
+        }
+        try {
+            HashMap<String, Boolean> columnNames = new HashMap<>();
+            List<String> queryRsList = new ArrayList<>();
+            DatabaseMetaData metaData = connection.getMetaData();
+            ResultSet resultSet = metaData.getColumns(null, schemaName, tableName, null);
+            while (resultSet.next()) {
+                String colName = resultSet.getString(Constants.JDBC_COLUMN_INFO_NAME);
+                queryRsList.add("min(" + colName + ") as " + colName + "_max");
+                queryRsList.add("max(" + colName + ") as " + colName + "_min");
+                queryRsList.add("percentile_disc(0.5) within group (order by " + colName + ") as " + colName + "_med");
+                boolean isNumeric = false;
+                if (resultSet.getInt(Constants.JDBC_COLUMN_INFO_DATA_TYPE) >= 2 && resultSet.getInt(Constants.JDBC_COLUMN_INFO_DATA_TYPE) <= 8) {
+                    queryRsList.add("avg(" + colName + ") as " + colName + "_avg");
+                    isNumeric = true;
+                }
+                columnNames.put(colName, isNumeric);
+            }
+
+            Statement stmt = connection.createStatement();
+            String query = "SELECT " + StringUtils.join(queryRsList, ",") + " FROM " + tableName;
+
+            ResultSet rs = stmt.executeQuery(query);
+
+            if (rs.next()) {
+                for (Map.Entry<String, Boolean> column : columnNames.entrySet()) {
+                    DbColumnStatisticsDto dto = new DbColumnStatisticsDto();
+                    String name = column.getKey();
+                    dto.setName(name);
+                    dto.setMin(rs.getString(name + "_max"));
+                    dto.setMax(rs.getString(name + "_min"));
+                    dto.setMed(rs.getString(name + "_med"));
+                    if (column.getValue()) {
+                        dto.setAvg(rs.getString(name + "_avg"));
+                    }
+                    result.add(dto);
+                }
+            }
+            stmt.close();
+            connection.close();
+        } catch (SQLException e) {
+            logger.error("Error while fetching data from table [" + schemaName + "." + tableName + "]. " + e.getMessage());
+            throw new SQLRequestException("dataPreview", e.getMessage(), connectionSettingsId.toString());
+        }
+
+        return result;
+    }
+
     private void processDbMetadata(Long id, Consumer<DatabaseMetaData> consumer) {
         Connection connection = dbConnectionManager.getConnection(id);
         if (connection == null) {

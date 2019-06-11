@@ -43,4 +43,24 @@ public interface DbViewerService {
      * @return
      */
     DataPreviewDto fetchData(Long connectionSettingsId, String schemaName, String tableName);
+
+    /**
+     * Returns a statistic object for a specified table
+     *
+     * @param connectionSettingsId ID of connection settings
+     * @param schemaName           name of schema to be explored
+     * @param tableName            name of table to be explored
+     * @return
+     */
+    DbTableStatisticsDto fetchTableStatistics(Long connectionSettingsId, String schemaName, String tableName);
+
+    /**
+     * Returns a statistic object for a specified table columns
+     *
+     * @param connectionSettingsId ID of connection settings
+     * @param schemaName           name of schema to be explored
+     * @param tableName            name of table to be explored
+     * @return
+     */
+    List<DbColumnStatisticsDto> fetchColumnStatistics(Long connectionSettingsId, String schemaName, String tableName);
 }
