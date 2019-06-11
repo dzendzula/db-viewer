@@ -1,7 +1,7 @@
 package org.dzendzula.dbviewer.converter;
 
 
-import org.dzendzula.dbviewer.controller.vo.DbConnectionSettingsDto;
+import org.dzendzula.dbviewer.controller.dto.DbConnectionSettingsDto;
 import org.dzendzula.dbviewer.domain.DbConnectionSettingsBo;
 import org.springframework.stereotype.Component;
 

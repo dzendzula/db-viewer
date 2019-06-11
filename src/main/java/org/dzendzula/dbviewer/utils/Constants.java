@@ -32,5 +32,6 @@ public class Constants {
 
     public static final String SQL_SELECT_ALL_FROM = "SELECT * FROM ";
 
+
     public static final String PAGE_DAFAULT_LIMIT = "50";
 }

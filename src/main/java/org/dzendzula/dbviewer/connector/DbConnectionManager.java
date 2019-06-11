@@ -3,9 +3,9 @@ package org.dzendzula.dbviewer.connector;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.dzendzula.dbviewer.controller.dto.DbConnectionSettingsDto;
 import org.dzendzula.dbviewer.controller.exceptions.ConnectionValidationException;
 import org.dzendzula.dbviewer.controller.exceptions.NotFoundValidationException;
-import org.dzendzula.dbviewer.controller.vo.DbConnectionSettingsDto;
 import org.dzendzula.dbviewer.domain.DbConnectionSettingsBo;
 import org.dzendzula.dbviewer.service.DbConnectionSettingsService;
 import org.dzendzula.dbviewer.utils.Constants;

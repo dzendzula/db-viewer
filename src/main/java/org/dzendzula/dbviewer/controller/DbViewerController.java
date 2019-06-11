@@ -2,8 +2,8 @@ package org.dzendzula.dbviewer.controller;
 
 
 import io.swagger.annotations.*;
-import org.dzendzula.dbviewer.controller.vo.DataPreviewDto;
-import org.dzendzula.dbviewer.controller.vo.DbColumnInfoDto;
+import org.dzendzula.dbviewer.controller.dto.DataPreviewDto;
+import org.dzendzula.dbviewer.controller.dto.DbColumnInfoDto;
 import org.dzendzula.dbviewer.service.DbViewerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,10 +1,13 @@
 package org.dzendzula.dbviewer.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dzendzula.dbviewer.connector.DbConnectionManager;
+import org.dzendzula.dbviewer.controller.dto.DataPreviewDto;
+import org.dzendzula.dbviewer.controller.dto.DbColumnInfoDto;
+import org.dzendzula.dbviewer.controller.dto.DbColumnStatisticsDto;
+import org.dzendzula.dbviewer.controller.dto.DbTableStatisticsDto;
 import org.dzendzula.dbviewer.controller.exceptions.ConnectionValidationException;
 import org.dzendzula.dbviewer.controller.exceptions.SQLRequestException;
-import org.dzendzula.dbviewer.controller.vo.DataPreviewDto;
-import org.dzendzula.dbviewer.controller.vo.DbColumnInfoDto;
 import org.dzendzula.dbviewer.service.DbViewerService;
 import org.dzendzula.dbviewer.utils.Constants;
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @Service
@@ -40,7 +44,7 @@ public class DbViewerServiceImpl implements DbViewerService {
                 }
             } catch (SQLException e) {
                 logger.error("Error while fetching database schemas. " + e.getMessage());
-                throw new SQLRequestException("schema", id.toString());
+                throw new SQLRequestException("schema", e.getMessage(), id.toString());
             }
         });
 
@@ -59,7 +63,7 @@ public class DbViewerServiceImpl implements DbViewerService {
                 }
             } catch (SQLException e) {
                 logger.error("Error while fetching tables for schema [" + schemaName + "]. " + e.getMessage());
-                throw new SQLRequestException("tables", connectionSettingsId.toString());
+                throw new SQLRequestException("tables", e.getMessage(), connectionSettingsId.toString());
             }
         });
         return result;
@@ -97,7 +101,7 @@ public class DbViewerServiceImpl implements DbViewerService {
                 }
             } catch (SQLException e) {
                 logger.error("Error while fetching columns for table [" + schemaName + "." + tableName + "]. " + e.getMessage());
-                throw new SQLRequestException("columns", connectionSettingsId.toString());
+                throw new SQLRequestException("columns", e.getMessage(), connectionSettingsId.toString());
             }
         });
         return result;
@@ -113,13 +117,11 @@ public class DbViewerServiceImpl implements DbViewerService {
         if (connection == null) {
             logger.debug("Cannot fetch data. Conection cannot be established");
             throw new ConnectionValidationException(connectionSettingsId.toString());
-
         }
         try {
             Statement stmt = connection.createStatement();
             //TODO make pageable from rest
             String query = Constants.SQL_SELECT_ALL_FROM + tableName + " LIMIT " + Constants.PAGE_DAFAULT_LIMIT;
-            ;
 
             ResultSet rs = stmt.executeQuery(query);
 
@@ -135,7 +137,8 @@ public class DbViewerServiceImpl implements DbViewerService {
                     try {
                         row.put(colName, rs.getString(colName));
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        logger.error("Error while fetching data from table column[" + schemaName + "." + tableName + "." + colName + "]. " + e.getMessage());
+                        throw new SQLRequestException("dataPreview", e.getMessage(), connectionSettingsId.toString());
                     }
                 });
                 data.add(row);
@@ -149,7 +152,7 @@ public class DbViewerServiceImpl implements DbViewerService {
             connection.close();
         } catch (SQLException e) {
             logger.error("Error while fetching data from table [" + schemaName + "." + tableName + "]. " + e.getMessage());
-            throw new SQLRequestException("dataPreview", connectionSettingsId.toString());
+            throw new SQLRequestException("dataPreview", e.getMessage(), connectionSettingsId.toString());
         }
         return result;
     }
@@ -166,7 +169,7 @@ public class DbViewerServiceImpl implements DbViewerService {
             connection.close();
         } catch (SQLException e) {
             logger.error("Error while acquiring database metadata for connection settings with ID =[" + id + "]. " + e.getMessage());
-            throw new SQLRequestException("schema", id.toString());
+            throw new SQLRequestException("schema", e.getMessage(), id.toString());
         }
 
     }

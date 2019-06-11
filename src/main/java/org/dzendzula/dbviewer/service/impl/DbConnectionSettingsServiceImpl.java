@@ -1,10 +1,10 @@
 package org.dzendzula.dbviewer.service.impl;
 
 
+import org.dzendzula.dbviewer.controller.dto.DbConnectionSettingsDto;
 import org.dzendzula.dbviewer.controller.exceptions.BadRequestValidationException;
 import org.dzendzula.dbviewer.controller.exceptions.NotFoundValidationException;
 import org.dzendzula.dbviewer.controller.exceptions.ParamSource;
-import org.dzendzula.dbviewer.controller.vo.DbConnectionSettingsDto;
 import org.dzendzula.dbviewer.converter.DbConnectionSettingsConverter;
 import org.dzendzula.dbviewer.domain.DbConnectionSettingsBo;
 import org.dzendzula.dbviewer.repository.DbConnectionSettingsRepository;

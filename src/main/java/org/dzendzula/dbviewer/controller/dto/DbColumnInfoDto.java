@@ -1,4 +1,4 @@
-package org.dzendzula.dbviewer.controller.vo;
+package org.dzendzula.dbviewer.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

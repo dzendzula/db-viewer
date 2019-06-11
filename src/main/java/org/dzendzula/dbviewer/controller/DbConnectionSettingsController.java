@@ -2,7 +2,7 @@ package org.dzendzula.dbviewer.controller;
 
 
 import io.swagger.annotations.*;
-import org.dzendzula.dbviewer.controller.vo.DbConnectionSettingsDto;
+import org.dzendzula.dbviewer.controller.dto.DbConnectionSettingsDto;
 import org.dzendzula.dbviewer.service.DbConnectionSettingsService;
 import org.dzendzula.dbviewer.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
