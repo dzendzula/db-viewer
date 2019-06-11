@@ -161,6 +161,7 @@ public class DbViewerServiceImpl implements DbViewerService {
     @Override
     public DbTableStatisticsDto fetchTableStatistics(Long connectionSettingsId, String schemaName, String tableName) {
         DbTableStatisticsDto result = new DbTableStatisticsDto();
+        result.setName(tableName);
         Connection connection = dbConnectionManager.getConnection(connectionSettingsId);
         if (connection == null) {
             logger.debug("Cannot fetch data. Conection cannot be established");
@@ -172,13 +173,14 @@ public class DbViewerServiceImpl implements DbViewerService {
             ResultSet columnsRs = meta.getColumns(null, schemaName, tableName, null);
             columnsRs.last();
             result.setNumberOfAttributes(columnsRs.getRow());
+
             Statement stmt = connection.createStatement();
             String query = "SELECT COUNT(*) FROM " + tableName;
             ResultSet rs = stmt.executeQuery(query);
             rs.next();
             result.setNumberOfRecords(rs.getInt(1));
+
             stmt.close();
-            result.setName(tableName);
             connection.close();
         } catch (SQLException e) {
             logger.error("Error while fetching data from table [" + schemaName + "." + tableName + "]. " + e.getMessage());
