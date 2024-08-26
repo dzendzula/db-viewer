@@ -20,7 +20,7 @@
 
         <hibernate-core.version>5.4.2.Final</hibernate-core.version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
-        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+        <springfox-swagger2.version>2.10.0</springfox-swagger2.version>
         <swagger-annotations.version>1.5.21</swagger-annotations.version>
 
         <db_app.db>db_viewer</db_app.db>
